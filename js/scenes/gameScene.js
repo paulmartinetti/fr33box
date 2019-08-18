@@ -7,37 +7,48 @@ gameScene.init = function () {
     this.gameW = this.sys.game.config.width;
     this.gameH = this.sys.game.config.height;
 
-    this.moving = true;
-
-    this.llc = [
+    // gameH = 1000, each number is 250, so we start in the middle
+    this.ulc = [
         {
-            sx: 100,
-            sy: 100,
-            fx: 350,
-            fy: 100
+            sx: 250,
+            sy: 250,
+            fx: 0,
+            fy: 250
         },
         {
-            sx: 100,
-            sy: 350,
-            fx: 100,
-            fy: 100
+            sx: 250,
+            sy: 0,
+            fx: 250,
+            fy: 250
         }
     ];
-
-    this.ind = 0;
-    this.min = 0;
+    // put 25 pixels between and below
+    this.urc = [
+        {
+            sx: 525,
+            sy: 250,
+            fx: 775,
+            fy: 250
+        },
+        {
+            sx: 525,
+            sy: 0,
+            fx: 525,
+            fy: 250
+        }
+    ];
 
 };
 
 // executed once, after assets were loaded
 gameScene.create = function () {
 
-    //console.log('here');
+    // add hour left (0, 1, 2)
+    
 
     // ajoute droite
-    this.droite = this.add.sprite(100, 100, 'droite').setOrigin(0, 0);
-    this.droite.setFrame(0);
-
+    this.hR = this.add.sprite(100, 100, 'droite').setOrigin(0, 0);
+    this.hDroite.setFrame(0);
     // mask to animate
     let dMask = this.add.graphics().setVisible(false);
     // enter color first, then alpha value
@@ -46,8 +57,6 @@ gameScene.create = function () {
     dMask.fillRect(100, 100, 250, 250);
     // add mask to droit
     this.droite.mask = new Phaser.Display.Masks.BitmapMask(this, dMask);
-
-    this.moving = false;
 
     this.timedEventStats = this.time.addEvent({
         delay: 1000,
@@ -80,18 +89,6 @@ gameScene.updateTime = function (){
 
     console.log(hours + ":" + minutes + ":" + seconds);
 }
-gameScene.update = function () {
-
-    //console.log(this.ind);
-
-    // move
-    if (!this.moving && this.min < 10) {
-        //console.log('here');
-        this.move(this.droite, this.llc[this.ind]);
-    }
-
-}
-
 
 gameScene.move = function (spr, obj) {
 
