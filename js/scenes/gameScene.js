@@ -7,34 +7,44 @@ gameScene.init = function () {
     this.gameW = this.sys.game.config.width;
     this.gameH = this.sys.game.config.height;
 
+    // globals
+    let side = 250;
+    let space = 25;
+    this.multi = 1;
+
     // gameH = 1000, each number is 250, so we start in the middle
-    this.ulc = [
+    this.format = [
         {
-            sx: 250,
-            sy: 250,
-            fx: 0,
-            fy: 250
+            sx: space,
+            sy: space,
+            fx: -1 * side,
+            fy: space,
+            rx: space,
+            ry: -1 * side
         },
         {
-            sx: 250,
-            sy: 0,
-            fx: 250,
-            fy: 250
-        }
-    ];
-    // put 25 pixels between and below
-    this.urc = [
-        {
-            sx: 525,
-            sy: 250,
-            fx: 775,
-            fy: 250
+            sx: (2 * space) + side,
+            sy: space,
+            fx: (2 * space) + (2 * side),
+            fy: space,
+            rx: (2 * space) + side,
+            ry: -1 * side
         },
         {
-            sx: 525,
-            sy: 0,
-            fx: 525,
-            fy: 250
+            sx: space,
+            sy: (2 * space) + side,
+            fx: -1 * side,
+            fy: (2 * space) + side,
+            rx: space,
+            ry: (2 * space) + (2 * side)
+        },
+        {
+            sx: (2 * space) + side,
+            sy: (2 * space) + side,
+            fx: (2 * space) + (2 * side),
+            fy: (2 * space) + side,
+            rx: (2 * space) + side,
+            ry: (2 * space) + (2 * side)
         }
     ];
 
@@ -44,11 +54,11 @@ gameScene.init = function () {
 gameScene.create = function () {
 
     // add hour left (0, 1, 2)
-    
+
 
     // ajoute droite
-    this.hR = this.add.sprite(100, 100, 'droite').setOrigin(0, 0);
-    this.hDroite.setFrame(0);
+    this.htens = this.add.sprite(100, 100, 'droite').setOrigin(0, 0);
+    this.htens.setFrame(0);
     // mask to animate
     let dMask = this.add.graphics().setVisible(false);
     // enter color first, then alpha value
@@ -56,7 +66,7 @@ gameScene.create = function () {
     // params - x, y, h, w
     dMask.fillRect(100, 100, 250, 250);
     // add mask to droit
-    this.droite.mask = new Phaser.Display.Masks.BitmapMask(this, dMask);
+    this.htens.mask = new Phaser.Display.Masks.BitmapMask(this, dMask);
 
     this.timedEventStats = this.time.addEvent({
         delay: 1000,
@@ -66,11 +76,14 @@ gameScene.create = function () {
             this.updateTime();
         },
         callbackScope: this
-    }); 
+    });
+
+    //
+    this.move(this.htens, this.format[0]);
 
     // to start in the middle of the grid, have to use update() and limit
 };
-gameScene.updateTime = function (){
+gameScene.updateTime = function () {
     var time = new Date();
 
     var hours = time.getHours();
@@ -88,6 +101,7 @@ gameScene.updateTime = function (){
     }
 
     console.log(hours + ":" + minutes + ":" + seconds);
+
 }
 
 gameScene.move = function (spr, obj) {
@@ -96,10 +110,7 @@ gameScene.move = function (spr, obj) {
     spr.x = obj.sx;
     spr.y = obj.sy;
 
-    // start
-    this.moving = true;
-
-    // right exit animation
+    // right exit animation--- REPLACE W TIMELINE
     let sortDroite = this.tweens.add({
         targets: spr,
         duration: 1500,
@@ -108,15 +119,25 @@ gameScene.move = function (spr, obj) {
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
-            this.moving = false;
 
-            this.ind++;
-            if (this.ind > 1) {
-                this.ind = 0;
-            } else {
-                this.min++;
-                this.droite.setFrame(this.min);
-            }
+            this.droite.setFrame(1);
+
+            // set x, y
+            spr.x = obj.rx;
+            spr.y = obj.ry;
+            
+            let rentre = this.tweens.add({
+                targets: spr,
+                duration: 1500,
+                x: obj.sx,
+                y: obj.sy,
+                paused: false,
+                callbackScope: this,
+                onComplete: function (tween, sprites) {
+                    console.log('done');
+                }
+
+            })
 
         }
 
