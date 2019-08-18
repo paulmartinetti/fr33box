@@ -9,7 +9,7 @@ gameScene.init = function () {
 
     this.moving = true;
 
-    this.movesA = [
+    this.llc = [
         {
             sx: 100,
             sy: 100,
@@ -49,19 +49,47 @@ gameScene.create = function () {
 
     this.moving = false;
 
+    this.timedEventStats = this.time.addEvent({
+        delay: 1000,
+        repeat: -1,
+        callback: function () {
+            // update stats (final implementation) - pass stats obj
+            this.updateTime();
+        },
+        callbackScope: this
+    }); 
 
     // to start in the middle of the grid, have to use update() and limit
 };
+gameScene.updateTime = function (){
+    var time = new Date();
+
+    var hours = time.getHours();
+    var minutes = time.getMinutes();
+    var seconds = time.getSeconds();
+
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+
+    console.log(hours + ":" + minutes + ":" + seconds);
+}
 gameScene.update = function () {
 
-    console.log(this.ind);
-    
- // move
-    if (!this.moving && this.min<10) {
-        console.log('here');
-        this.move(this.droite, this.movesA[this.ind]);
+    //console.log(this.ind);
+
+    // move
+    if (!this.moving && this.min < 10) {
+        //console.log('here');
+        this.move(this.droite, this.llc[this.ind]);
     }
-    
+
 }
 
 
@@ -84,7 +112,7 @@ gameScene.move = function (spr, obj) {
         callbackScope: this,
         onComplete: function (tween, sprites) {
             this.moving = false;
-            
+
             this.ind++;
             if (this.ind > 1) {
                 this.ind = 0;
@@ -92,7 +120,7 @@ gameScene.move = function (spr, obj) {
                 this.min++;
                 this.droite.setFrame(this.min);
             }
-            
+
         }
 
     }, this);
