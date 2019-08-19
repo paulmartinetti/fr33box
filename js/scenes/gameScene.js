@@ -121,51 +121,75 @@ gameScene.updateTime = function () {
     let minutes = time.getMinutes();
     let hours = time.getHours();
 
+    let mTens = 0;
+    let mOnes = 0;
+    let hTens = 0;
+    let hOnes = 0;
+
     // separate minutes into tens and ones
     if (minutes < 10) {
-        this.mTensOld = 0;
-        this.mOnesOld = minutes;
+        mTens = 0;
+        mOnes = minutes;
     } else {
-        this.mTensOld = Math.floor(minutes / 10);
-        this.mOnesOld = minutes - (this.mTensOld * 10);
+        mTens = Math.floor(minutes / 10);
+        mOnes = minutes - (mTens * 10);
     }
 
     if (hours < 10) {
-        this.hTensOld = 0;
-        this.hOnesOld = hours;
+        hTens = 0;
+        hOnes = hours;
     } else {
-        this.hTensOld = Math.floor(hours / 10);
-        this.hOnesOld = hours - (this.hTensOld * 10);
+        hTens = Math.floor(hours / 10);
+        hOnes = hours - (hTens * 10);
     }
 
+    // if same minute, return
+    if (mOnes == this.mOnesOld) return;
+
     //console.log(this.hTensOld, this.hOnesOld, this.mTensOld, this.mOnesOld);
+    for (let i = 0; i< this.boxesA.length;i++){
+
+        let box = this.boxesA[i];
+
+        // update mOnes box
+        if (box.format == 3) {
+            this.depart(box, mOnes);
+        }
+
+    }
+
+    // update old
+    this.hTensOld = hTens;
+    this.hOnesOld = hOnes;
+    this.mTensOld = mTens;
+    this.mOnesOld = mOnes;
 
 }
 // animate out
-gameScene.depart = function (spr) {
+gameScene.depart = function (box, newTime) {
     let depart = this.tweens.add({
-        targets: spr,
+        targets: box,
         duration: 1500,
-        x: -225,
-        y: 25,
+        x: box.dx,
+        y: box.dy,
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
-            spr.setFrame(this.mOnesOld);
+            box.setFrame(newTime);
             // set x, y
-            spr.x = 25;
-            spr.y = -225;
-            this.rentre(spr);
+            box.x = box.rx;
+            box.y = box.ry;
+            this.rentre(box);
         }
     }, this);
 }
 // animate back in
-gameScene.rentre = function (spr) {
+gameScene.rentre = function (box) {
     let rentre = this.tweens.add({
-        targets: spr,
+        targets: box,
         duration: 1500,
-        x: 25,
-        y: 25,
+        x: box.ix,
+        y: box.iy,
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
