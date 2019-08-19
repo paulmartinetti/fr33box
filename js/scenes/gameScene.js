@@ -147,13 +147,28 @@ gameScene.updateTime = function () {
     if (mOnes == this.mOnesOld) return;
 
     //console.log(this.hTensOld, this.hOnesOld, this.mTensOld, this.mOnesOld);
-    for (let i = 0; i< this.boxesA.length;i++){
+    for (let i = 0; i < this.boxesA.length; i++) {
 
         let box = this.boxesA[i];
 
         // update mOnes box
         if (box.format == 3) {
             this.depart(box, mOnes);
+        }
+
+        // check for updated mTens
+        if (box.format == 2 && mTens != this.mTensOld) {
+            this.depart(box, mTens);
+        }
+        
+        // hOnes
+        if (box.format == 1 && hOnes != this.hOnesOld) {
+            this.depart(box, hOnes);
+        }
+
+        // hTens
+        if (box.format == 0 && hTens != this.hTensOld) {
+            this.depart(box, hTens);
         }
 
     }
