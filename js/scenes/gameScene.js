@@ -42,16 +42,20 @@ gameScene.create = function () {
     let box;
     let ix;
     let iy;
+    // mask to animate
+    let square = this.add.graphics().setVisible(false);
+    // enter color first, then alpha value
+    square.fillStyle(0x000000, 1);
+    // loop rows cols
     for (let row = 0; row < this.rowsColsA.length; row++) {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
 
             // position based on rowCol array
-            ix = this.margin + ((this.side + this.spacer) * row);
-            iy = this.margin + ((this.side + this.spacer) * col);
+            ix = this.margin + ((this.side + this.spacer) * col);
+            iy = this.margin + ((this.side + this.spacer) * row);
 
             // format specific
             let format = this.rowsColsA[row][col];
-            console.log(format);
             if (format == 0) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
                 box.format = 0;
@@ -99,11 +103,15 @@ gameScene.create = function () {
             // independent of format
             box.ix = ix;
             box.iy = iy;
-            box.mask = this.maskMe(ix, iy);
+            // params - x, y, h, w
+            square.fillRect(ix, iy, this.side, this.side);
+            let mask = square.createGeometryMask();
+            box.setMask(mask);
+            //
             this.boxesA.push(box);
         }
     }
-    //console.log(box);
+    //console.log(this.boxesA);
 };
 
 gameScene.updateTime = function () {
@@ -133,7 +141,6 @@ gameScene.updateTime = function () {
     //console.log(this.hTensOld, this.hOnesOld, this.mTensOld, this.mOnesOld);
 
 }
-
 // animate out
 gameScene.depart = function (spr) {
     let depart = this.tweens.add({
@@ -165,16 +172,6 @@ gameScene.rentre = function (spr) {
             console.log('here')
         }
     }, this);
-}
-gameScene.maskMe = function (ix, iy) {
-    // mask to animate
-    let dMask = this.add.graphics().setVisible(false);
-    // enter color first, then alpha value
-    dMask.fillStyle(0x000000, 1);
-    // params - x, y, h, w
-    dMask.fillRect(ix, iy, this.side, this.side);
-    // add mask to droit
-    return new Phaser.Display.Masks.BitmapMask(this, dMask);
 }
 
 /******************* no code below here, doesn't run */
