@@ -12,6 +12,11 @@ gameScene.init = function () {
     this.side = 250;
     this.fois = 1;
 
+    this.hTensOld = 0;
+    this.hOnesOld = 0;
+    this.mTensOld = 0;
+    this.mOnesOld = 0;
+
 };
 
 // executed once, after assets were loaded
@@ -26,7 +31,7 @@ gameScene.create = function () {
     // test move
     this.depart(this.htens);
 
-    /* this.timedEventStats = this.time.addEvent({
+    this.timedEventStats = this.time.addEvent({
         delay: 1000,
         repeat: -1,
         callback: function () {
@@ -34,28 +39,36 @@ gameScene.create = function () {
             this.updateTime();
         },
         callbackScope: this
-    }); */
-    // to start in the middle of the grid, have to use update() and limit
+    });
 };
 
 gameScene.updateTime = function () {
-    var time = new Date();
 
-    var hours = time.getHours();
-    var minutes = time.getMinutes();
-    var seconds = time.getSeconds();
+    let time = new Date();
+
+    let minutes = time.getMinutes();
+    let hours = time.getHours();
+    
+    // separate minutes into tens and ones
+    if (minutes < 10) {
+        this.mTensOld = 0;
+        this.mOnesOld = minutes;
+    } else {
+        this.mTensOld = Math.floor(minutes / 10);
+        this.mOnesOld = minutes - (this.mTensOld * 10);
+    }
 
     if (hours < 10) {
-        hours = "0" + hours;
+        this.hTensOld = 0;
+        this.hOnesOld = hours;
+    } else {
+        this.hTensOld = Math.floor(hours / 10);
+        this.hOnesOld = hours - (this.hTensOld * 10);
     }
-    if (minutes < 10) {
-        minutes = "0" + minutes;
-    }
-    if (seconds < 10) {
-        seconds = "0" + seconds;
-    }
+    
 
-    console.log(hours + ":" + minutes + ":" + seconds);
+
+    console.log(((this.hTensOld*10) + this.hOnesOld)+"h"+((this.mTensOld*10)+this.mOnesOld));
 
 }
 
@@ -68,7 +81,7 @@ gameScene.depart = function (spr) {
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
-            spr.setFrame(1);
+            spr.setFrame(this.mOnesOld);
             // set x, y
             spr.x = 25;
             spr.y = -225;
