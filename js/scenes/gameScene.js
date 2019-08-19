@@ -10,27 +10,24 @@ gameScene.init = function () {
     this.margin = 25;
     this.spacer = 25;
     this.side = 250;
-    this.fois = 1;
 
     this.hTensOld = 0;
     this.hOnesOld = 0;
     this.mTensOld = 0;
     this.mOnesOld = 0;
 
+    // design of sprites
+    this.rowsColsA = [[0, 1], [2, 3]];
+
+    // box array for updates
+    this.boxesA = [];
+
 };
 
 // executed once, after assets were loaded
 gameScene.create = function () {
 
-    // ajoute droite
-    this.htens = this.add.sprite(25, 25, 'droite').setOrigin(0, 0);
-    //this.htens.setFrame(0);
-    // params - x and y of mask
-    this.htens.mask = this.maskMe(this.htens.x,this.htens.y);
-
-    // test move
-    this.depart(this.htens);
-
+    // start tracking time
     this.timedEventStats = this.time.addEvent({
         delay: 1000,
         repeat: -1,
@@ -40,6 +37,73 @@ gameScene.create = function () {
         },
         callbackScope: this
     });
+
+    // setup boxes based on rowCol position and format
+    let box;
+    let ix;
+    let iy;
+    for (let row = 0; row < this.rowsColsA.length; row++) {
+        for (let col = 0; col < this.rowsColsA[row].length; col++) {
+
+            // position based on rowCol array
+            ix = this.margin + ((this.side + this.spacer) * row);
+            iy = this.margin + ((this.side + this.spacer) * col);
+
+            // format specific
+            let format = this.rowsColsA[row][col];
+            console.log(format);
+            if (format == 0) {
+                box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
+                box.format = 0;
+                box.setFrame(this.hTensOld);
+                // animate - depart
+                box.dx = ix - this.side;
+                box.dy = iy;
+                // animate - rentree
+                box.rx = ix;
+                box.ry = iy - this.side;
+            }
+            if (format == 1) {
+                box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
+                box.format = 1;
+                box.setFrame(this.hOnesOld);
+                // animate - depart
+                box.dx = ix + this.side;
+                box.dy = iy;
+                // animate - rentree
+                box.rx = ix;
+                box.ry = iy - this.side;
+            }
+            if (format == 2) {
+                box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
+                box.format = 2;
+                box.setFrame(this.mTensOld);
+                // animate - depart
+                box.dx = ix - this.side;
+                box.dy = iy;
+                // animate - rentree
+                box.rx = ix;
+                box.ry = iy + this.side;
+            }
+            if (format == 3) {
+                box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
+                box.format = 3;
+                box.setFrame(this.mOnesOld);
+                // animate - depart
+                box.dx = ix + this.side;
+                box.dy = iy;
+                // animate - rentree
+                box.rx = ix;
+                box.ry = iy + this.side;
+            }
+            // independent of format
+            box.ix = ix;
+            box.iy = iy;
+            box.mask = this.maskMe(ix, iy);
+            this.boxesA.push(box);
+        }
+    }
+    //console.log(box);
 };
 
 gameScene.updateTime = function () {
@@ -48,7 +112,7 @@ gameScene.updateTime = function () {
 
     let minutes = time.getMinutes();
     let hours = time.getHours();
-    
+
     // separate minutes into tens and ones
     if (minutes < 10) {
         this.mTensOld = 0;
@@ -65,13 +129,12 @@ gameScene.updateTime = function () {
         this.hTensOld = Math.floor(hours / 10);
         this.hOnesOld = hours - (this.hTensOld * 10);
     }
-    
 
-
-    console.log(((this.hTensOld*10) + this.hOnesOld)+"h"+((this.mTensOld*10)+this.mOnesOld));
+    //console.log(this.hTensOld, this.hOnesOld, this.mTensOld, this.mOnesOld);
 
 }
 
+// animate out
 gameScene.depart = function (spr) {
     let depart = this.tweens.add({
         targets: spr,
@@ -89,6 +152,7 @@ gameScene.depart = function (spr) {
         }
     }, this);
 }
+// animate back in
 gameScene.rentre = function (spr) {
     let rentre = this.tweens.add({
         targets: spr,
@@ -114,43 +178,3 @@ gameScene.maskMe = function (ix, iy) {
 }
 
 /******************* no code below here, doesn't run */
-// globals
-let side = 250;
-let space = 25;
-this.multi = 1;
-
-// gameH = 1000, each number is 250, so we start in the middle
-this.format = [
-    {
-        sx: space,
-        sy: space,
-        fx: -1 * side,
-        fy: space,
-        rx: space,
-        ry: -1 * side
-    },
-    {
-        sx: (2 * space) + side,
-        sy: space,
-        fx: (2 * space) + (2 * side),
-        fy: space,
-        rx: (2 * space) + side,
-        ry: -1 * side
-    },
-    {
-        sx: space,
-        sy: (2 * space) + side,
-        fx: -1 * side,
-        fy: (2 * space) + side,
-        rx: space,
-        ry: (2 * space) + (2 * side)
-    },
-    {
-        sx: (2 * space) + side,
-        sy: (2 * space) + side,
-        fx: (2 * space) + (2 * side),
-        fy: (2 * space) + side,
-        rx: (2 * space) + side,
-        ry: (2 * space) + (2 * side)
-    }
-];
