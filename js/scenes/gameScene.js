@@ -7,17 +7,30 @@ gameScene.init = function () {
     this.gameW = this.sys.game.config.width;
     this.gameH = this.sys.game.config.height;
 
+    // grid boundaries and sprite dimensions 
     this.margin = 25;
     this.spacer = 25;
     this.side = 250;
 
+    // store last time check
     this.hTensOld = 0;
     this.hOnesOld = 0;
     this.mTensOld = 0;
     this.mOnesOld = 0;
 
     // design of sprites
+    /*
+    * standard clock:
+    * [0, 1] [h, h]
+    * [2, 3] [m, m]
+    *  
+    * 's' is a space option for visual effect
+    * 
+    */
     this.rowsColsA = [[0, 1], [2, 3]];
+    //this.rowsColsA = [[0, 1, 2, 3]];
+    //this.rowsColsA = [[0, 1], ['s', 2, 3]];
+    //this.rowsColsA = [[0, 1], ['s'], ['s'], ['s', 's', 2, 3]];
 
     // box array for updates
     this.boxesA = [];
@@ -40,13 +53,14 @@ gameScene.create = function () {
 
     // setup boxes based on rowCol position and format
     let box;
+    // initial x, y
     let ix;
     let iy;
     // mask to animate
     let square = this.add.graphics().setVisible(false);
     // enter color first, then alpha value
     square.fillStyle(0x000000, 1);
-    // loop rows cols
+    // loop rows cols from design array
     for (let row = 0; row < this.rowsColsA.length; row++) {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
 
@@ -56,14 +70,18 @@ gameScene.create = function () {
 
             // format specific
             let format = this.rowsColsA[row][col];
+
+            // skip a space
+            if (format == 's') continue;
+
             if (format == 0) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
                 box.format = 0;
                 box.setFrame(this.hTensOld);
-                // animate - depart
+                // animate - depart ending x, y
                 box.dx = ix - this.side;
                 box.dy = iy;
-                // animate - rentree
+                // animate - rentree starting x, y
                 box.rx = ix;
                 box.ry = iy - this.side;
             }
@@ -103,11 +121,12 @@ gameScene.create = function () {
             // independent of format
             box.ix = ix;
             box.iy = iy;
+            // add shape mask to each
             // params - x, y, h, w
             square.fillRect(ix, iy, this.side, this.side);
             let mask = square.createGeometryMask();
             box.setMask(mask);
-            //
+            // store boxes for updating
             this.boxesA.push(box);
         }
     }
@@ -116,11 +135,13 @@ gameScene.create = function () {
 
 gameScene.updateTime = function () {
 
+    // checking once per second
     let time = new Date();
 
     let minutes = time.getMinutes();
     let hours = time.getHours();
 
+    // new time check values
     let mTens = 0;
     let mOnes = 0;
     let hTens = 0;
@@ -135,6 +156,7 @@ gameScene.updateTime = function () {
         mOnes = minutes - (mTens * 10);
     }
 
+    // same for hours
     if (hours < 10) {
         hTens = 0;
         hOnes = hours;
@@ -143,7 +165,7 @@ gameScene.updateTime = function () {
         hOnes = hours - (hTens * 10);
     }
 
-    // if same minute, return
+    // if same minute, no changes
     if (mOnes == this.mOnesOld) return;
 
     //console.log(this.hTensOld, this.hOnesOld, this.mTensOld, this.mOnesOld);
@@ -160,7 +182,7 @@ gameScene.updateTime = function () {
         if (box.format == 2 && mTens != this.mTensOld) {
             this.depart(box, mTens);
         }
-        
+
         // hOnes
         if (box.format == 1 && hOnes != this.hOnesOld) {
             this.depart(box, hOnes);
@@ -173,7 +195,7 @@ gameScene.updateTime = function () {
 
     }
 
-    // update old
+    // new is now old
     this.hTensOld = hTens;
     this.hOnesOld = hOnes;
     this.mTensOld = mTens;
@@ -190,8 +212,9 @@ gameScene.depart = function (box, newTime) {
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
+            // update time
             box.setFrame(newTime);
-            // set x, y
+            // set x, y for rentree
             box.x = box.rx;
             box.y = box.ry;
             this.rentre(box);
