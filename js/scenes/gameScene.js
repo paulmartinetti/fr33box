@@ -208,7 +208,7 @@ gameScene.rentre = function (box) {
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
-            console.log('here')
+            console.log('voila')
         }
     }, this);
 }
