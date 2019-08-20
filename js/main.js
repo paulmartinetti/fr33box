@@ -5,7 +5,7 @@
 
 let config = {
   type: Phaser.AUTO,
-  width: 1800,
+  width: 1200,
   height: 1200,
   scene: [bootScene, loadingScene, homeScene, gameScene],
   title: 'fr33b0x4rt',

@@ -46,6 +46,8 @@ loadingScene.preload = function () {
     // LOAD ASSETS
     this.load.image('bg', 'assets/bg.png');
 
+    this.load.image('mask', 'assets/mask.png');
+
     // left / gauche
     this.load.spritesheet('gauche','assets/freeBoxGauche.png', {
         frameWidth: 250,

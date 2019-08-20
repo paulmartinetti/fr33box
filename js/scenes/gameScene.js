@@ -56,10 +56,6 @@ gameScene.create = function () {
     // initial x, y
     let ix;
     let iy;
-    // mask to animate
-    let square = this.add.graphics().setVisible(false);
-    // enter color first, then alpha value
-    square.fillStyle(0x000000, 1);
     // loop rows cols from design array
     for (let row = 0; row < this.rowsColsA.length; row++) {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
@@ -122,9 +118,8 @@ gameScene.create = function () {
             box.ix = ix;
             box.iy = iy;
             // add shape mask to each
-            // params - x, y, h, w
-            square.fillRect(ix, iy, this.side, this.side);
-            let mask = square.createGeometryMask();
+            box.shape = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0,0);
+            let mask = box.shape.createBitmapMask();
             box.setMask(mask);
             // store boxes for updating
             this.boxesA.push(box);
