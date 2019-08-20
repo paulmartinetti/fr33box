@@ -118,14 +118,13 @@ gameScene.create = function () {
             box.ix = ix;
             box.iy = iy;
             // add shape mask to each
-            box.shape = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0,0);
-            let mask = box.shape.createBitmapMask();
-            box.setMask(mask);
+            box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0,0);
+            box.setMask(box.fenetre.createBitmapMask());
             // store boxes for updating
             this.boxesA.push(box);
         }
     }
-    //console.log(this.boxesA);
+    console.log(this.boxesA[3].fenetre.x);
 };
 
 gameScene.updateTime = function () {
