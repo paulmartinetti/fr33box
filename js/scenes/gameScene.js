@@ -78,7 +78,7 @@ gameScene.create = function () {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
                 box.format = 0;
                 box.setFrame(this.hTensCur);
-                
+
             }
             if (format == 1) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
@@ -126,7 +126,7 @@ gameScene.formatter = function (box) {
         box.ry = box.iy - this.side;
     }
 
-    if (box.format == 1){
+    if (box.format == 1) {
         // animate - depart
         box.dx = box.ix + this.side;
         box.dy = box.iy;
@@ -134,7 +134,7 @@ gameScene.formatter = function (box) {
         box.rx = box.ix;
         box.ry = box.iy - this.side;
     }
-    
+
     if (box.format == 2) {
         // animate - depart
         box.dx = box.ix - this.side;
@@ -153,10 +153,12 @@ gameScene.formatter = function (box) {
         box.ry = box.iy + this.side;
     }
 }
+// 
 gameScene.move2x2 = function () {
     // prepare to move 2x2 clock
-    this.topCur = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
-    this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - (this.side - this.spacer) * 2));
+    this.topCur = 25 + Math.floor(Math.random() * (this.gameH - 25 - ((this.side + this.spacer) * 2)));
+    this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - 25 - ((this.side + this.spacer) * 2)));
+    console.log(this.topCur, this.leftCur);
 }
 
 gameScene.updateTime = function () {
