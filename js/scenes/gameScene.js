@@ -95,13 +95,13 @@ gameScene.create = function () {
                 box.format = 3;
                 box.setFrame(this.mOnesCur);
             }
+            // add shape mask to each
+            box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
+            box.setMask(box.fenetre.createBitmapMask());
             // set coordinates
             box.row = row;
             box.col = col;
             this.formatter(box);
-            // add shape mask to each
-            box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
-            box.setMask(box.fenetre.createBitmapMask());
             // store boxes for updating
             this.boxesA.push(box);
         }
@@ -109,15 +109,13 @@ gameScene.create = function () {
     //this.boxesA[2].fenetre.y+=100;
     //this.boxesA[2].y += 100;
 };
-/* gameScene.mover = function(){
-    // position based on rowCol array
-    
-} */
 gameScene.formatter = function (box) {
 
     // update box
     box.ix = this.leftCur + ((this.side + this.spacer) * box.col);
     box.iy = this.topCur + ((this.side + this.spacer) * box.row);
+    box.fenetre.x = box.ix;
+    box.fenetre.y = box.iy;
 
     if (box.format == 0) {
         // animate - depart ending x, y
@@ -157,9 +155,8 @@ gameScene.formatter = function (box) {
 }
 gameScene.move2x2 = function () {
     // prepare to move 2x2 clock
-    let topNew = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
-    let leftNew = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
-
+    this.topCur = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
+    this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - (this.side - this.spacer) * 2));
 }
 
 gameScene.updateTime = function () {
@@ -221,7 +218,6 @@ gameScene.updateTime = function () {
         if (box.format == 0) {
             this.depart(box, hTens);
         }
-
     }
 
     // new is now Cur
@@ -230,6 +226,8 @@ gameScene.updateTime = function () {
     this.mTensCur = mTens;
     this.mOnesCur = mOnes;
 
+    // move 2x2 now
+    this.move2x2();
 }
 
 // animate out
@@ -244,10 +242,8 @@ gameScene.depart = function (box, newTime) {
         onComplete: function (tween, sprites) {
             // update time
             box.setFrame(newTime);
-            // move 2x2 now
-            //this.move2x2();
-            //box.fenetre.x = box.ix;
-            //box.fenetre.y = box.iy;
+            // tenter bouger
+            this.formatter(box);
             // set x, y for rentree
             box.x = box.rx;
             box.y = box.ry;
