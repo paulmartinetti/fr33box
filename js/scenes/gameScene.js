@@ -8,16 +8,16 @@ gameScene.init = function () {
     this.gameH = this.sys.game.config.height;
 
     // grid boundaries and sprite dimensions 
-    this.topOld = 25;
-    this.leftOld = 25;
+    this.topCur = 25;
+    this.leftCur = 25;
     this.spacer = 25;
     this.side = 250;
 
     // store last time check
-    this.hTensOld = 0;
-    this.hOnesOld = 0;
-    this.mTensOld = 0;
-    this.mOnesOld = 0;
+    this.hTensCur = 0;
+    this.hOnesCur = 0;
+    this.mTensCur = 0;
+    this.mOnesCur = 0;
 
     // design of sprites
     /*
@@ -65,8 +65,8 @@ gameScene.create = function () {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
 
             // position based on rowCol array
-            ix = this.leftOld + ((this.side + this.spacer) * col);
-            iy = this.topOld + ((this.side + this.spacer) * row);
+            ix = this.leftCur + ((this.side + this.spacer) * col);
+            iy = this.topCur + ((this.side + this.spacer) * row);
 
             // format specific
             let format = this.rowsColsA[row][col];
@@ -77,50 +77,28 @@ gameScene.create = function () {
             if (format == 0) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
                 box.format = 0;
-                box.setFrame(this.hTensOld);
-                // animate - depart ending x, y
-                box.dx = ix - this.side;
-                box.dy = iy;
-                // animate - rentree starting x, y
-                box.rx = ix;
-                box.ry = iy - this.side;
+                box.setFrame(this.hTensCur);
+                
             }
             if (format == 1) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
                 box.format = 1;
-                box.setFrame(this.hOnesOld);
-                // animate - depart
-                box.dx = ix + this.side;
-                box.dy = iy;
-                // animate - rentree
-                box.rx = ix;
-                box.ry = iy - this.side;
+                box.setFrame(this.hOnesCur);
             }
             if (format == 2) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
                 box.format = 2;
-                box.setFrame(this.mTensOld);
-                // animate - depart
-                box.dx = ix - this.side;
-                box.dy = iy;
-                // animate - rentree
-                box.rx = ix;
-                box.ry = iy + this.side;
+                box.setFrame(this.mTensCur);
             }
             if (format == 3) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
                 box.format = 3;
-                box.setFrame(this.mOnesOld);
-                // animate - depart
-                box.dx = ix + this.side;
-                box.dy = iy;
-                // animate - rentree
-                box.rx = ix;
-                box.ry = iy + this.side;
+                box.setFrame(this.mOnesCur);
             }
-            // independent of format
-            box.ix = ix;
-            box.iy = iy;
+            // set coordinates
+            box.row = row;
+            box.col = col;
+            this.formatter(box);
             // add shape mask to each
             box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
             box.setMask(box.fenetre.createBitmapMask());
@@ -131,6 +109,58 @@ gameScene.create = function () {
     //this.boxesA[2].fenetre.y+=100;
     //this.boxesA[2].y += 100;
 };
+/* gameScene.mover = function(){
+    // position based on rowCol array
+    
+} */
+gameScene.formatter = function (box) {
+
+    // update box
+    box.ix = this.leftCur + ((this.side + this.spacer) * box.col);
+    box.iy = this.topCur + ((this.side + this.spacer) * box.row);
+
+    if (box.format == 0) {
+        // animate - depart ending x, y
+        box.dx = box.ix - this.side;
+        box.dy = box.iy;
+        // animate - rentree starting x, y
+        box.rx = box.ix;
+        box.ry = box.iy - this.side;
+    }
+
+    if (box.format == 1){
+        // animate - depart
+        box.dx = box.ix + this.side;
+        box.dy = box.iy;
+        // animate - rentree
+        box.rx = box.ix;
+        box.ry = box.iy - this.side;
+    }
+    
+    if (box.format == 2) {
+        // animate - depart
+        box.dx = box.ix - this.side;
+        box.dy = box.iy;
+        // animate - rentree
+        box.rx = box.ix;
+        box.ry = box.iy + this.side;
+    }
+
+    if (box.format == 3) {
+        // animate - depart
+        box.dx = box.ix + this.side;
+        box.dy = box.iy;
+        // animate - rentree
+        box.rx = box.ix;
+        box.ry = box.iy + this.side;
+    }
+}
+gameScene.move2x2 = function () {
+    // prepare to move 2x2 clock
+    let topNew = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
+    let leftNew = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
+
+}
 
 gameScene.updateTime = function () {
 
@@ -165,9 +195,9 @@ gameScene.updateTime = function () {
     }
 
     // if same minute, no changes
-    if (mOnes == this.mOnesOld) return;
+    if (mOnes == this.mOnesCur) return;
 
-    //console.log(this.hTensOld, this.hOnesOld, this.mTensOld, this.mOnesOld);
+    //console.log(this.hTensCur, this.hOnesCur, this.mTensCur, this.mOnesCur);
     for (let i = 0; i < this.boxesA.length; i++) {
 
         let box = this.boxesA[i];
@@ -177,54 +207,31 @@ gameScene.updateTime = function () {
             this.depart(box, mOnes);
         }
 
-        // check for updated mTens -  && mTens != this.mTensOld
+        // check for updated mTens -  && mTens != this.mTensCur
         if (box.format == 2) {
             this.depart(box, mTens);
         }
 
-        // hOnes -  && hOnes != this.hOnesOld
+        // hOnes -  && hOnes != this.hOnesCur
         if (box.format == 1) {
             this.depart(box, hOnes);
         }
 
-        // hTens -  && hTens != this.hTensOld
+        // hTens -  && hTens != this.hTensCur
         if (box.format == 0) {
             this.depart(box, hTens);
         }
 
     }
 
-    // new is now old
-    this.hTensOld = hTens;
-    this.hOnesOld = hOnes;
-    this.mTensOld = mTens;
-    this.mOnesOld = mOnes;
+    // new is now Cur
+    this.hTensCur = hTens;
+    this.hOnesCur = hOnes;
+    this.mTensCur = mTens;
+    this.mOnesCur = mOnes;
 
 }
-gameScene.move2x2 = function (){
-    // prepare to move 2x2 clock
-    let topNew = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
-    let leftNew = 25 + Math.floor(Math.random() * (this.gameH - (this.side - this.spacer) * 2));
 
-    let topDiff = topNew-this.topOld;
-    let leftDiff = leftNew-this.leftOld;
-
-    for (let i = 0; i < this.boxesA.length; i++){
-        let box = this.boxesA[i];
-        // update values
-        box.ix += leftDiff;
-        box.iy += topDiff;
-        box.dx += leftDiff;
-        box.dy += topDiff;
-        box.rx += leftDiff;
-        box.ry += topDiff;
-    }
-
-    // new is old
-    this.topOld = topNew;
-    this.leftOld = leftNew;
-
-}
 // animate out
 gameScene.depart = function (box, newTime) {
     let depart = this.tweens.add({
