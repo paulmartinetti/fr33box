@@ -29,11 +29,13 @@ gameScene.init = function () {
     * 
     */
     this.rowsColsA = [[0, 1], [2, 3]];
+
+    // - if using other than a 2x2 grid - set move=false
     //this.rowsColsA = [[0, 1, 2, 3]];
     //this.rowsColsA = [[0, 1], ['s', 2, 3]];
     //this.rowsColsA = [[0, 1], ['s'], ['s'], ['s', 's', 2, 3]];
     //this.rowsColsA = [[0, 's'], ['s', 1], ['s', 's', 2], ['s', 's', 's', 3]];
-
+    this.movingBoxes = true;
     //
 
     // box array for updates
@@ -153,13 +155,6 @@ gameScene.formatter = function (box) {
         box.ry = box.iy + this.side;
     }
 }
-// 
-gameScene.move2x2 = function () {
-    // prepare to move 2x2 clock
-    this.topCur = 25 + Math.floor(Math.random() * (this.gameH - 25 - ((this.side + this.spacer) * 2)));
-    this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - 25 - ((this.side + this.spacer) * 2)));
-    console.log(this.topCur, this.leftCur);
-}
 
 gameScene.updateTime = function () {
 
@@ -229,7 +224,10 @@ gameScene.updateTime = function () {
     this.mOnesCur = mOnes;
 
     // move 2x2 now
-    this.move2x2();
+    if (this.movingBoxes) {
+        this.topCur = 25 + Math.floor(Math.random() * (this.gameH - 25 - ((this.side + this.spacer) * 2)));
+        this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - 25 - ((this.side + this.spacer) * 2)));
+    }
 }
 
 // animate out
@@ -261,10 +259,7 @@ gameScene.rentre = function (box) {
         x: box.ix,
         y: box.iy,
         paused: false,
-        callbackScope: this,
-        onComplete: function (tween, sprites) {
-            console.log('voila')
-        }
+        callbackScope: this
     }, this);
 }
 
