@@ -28,16 +28,29 @@ gameScene.init = function () {
     * 's' is a space option for visual effect
     * 
     */
-    //.rowsColsA = [[0, 1], [2, 3]];
 
-    // - if using other than a 2x2 grid - set move=false
+    // original
+    //rowsColsA = [[0, 1], [2, 3]];
+
+    // moving @ each minute - if using other than a 2x2 grid - set move=false
     this.movingBoxes = false;
 
+    // other random formats, non-moving
     //this.rowsColsA = [[0, 1, 2, 3]];
     //this.rowsColsA = [[0, 1], ['s', 2, 3]];
     //this.rowsColsA = [[0, 1], ['s'], ['s'], ['s', 's', 2, 3]];
     //this.rowsColsA = [[0, 's'], ['s', 1], ['s', 's', 2], ['s', 's', 's', 3]];
-    this.rowsColsA = [['s', 5, 6, 's'], [5, 0, 1, 6], [8, 2, 3, 7], ['s', 8, 7, 's']];
+
+    /**
+     * LOVE animation grid
+     * 
+     * ['s', 10, 11, 's']
+     * [17 ,  0,  1,  12]
+     * [16 ,  2,  3,  13]
+     * ['s', 15, 14, 's']
+     * 
+     */
+    this.rowsColsA = [['s', 10, 11, 's'], [17, 0, 1, 12], [16, 2, 3, 13], ['s', 15, 14, 's']];
     //
 
     // box array for updates
@@ -64,8 +77,6 @@ gameScene.create = function () {
     // initial x, y
     let ix;
     let iy;
-    // initial love index
-    let li = 0;
     // loop rows cols from design array
     for (let row = 0; row < this.rowsColsA.length; row++) {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
@@ -100,8 +111,7 @@ gameScene.create = function () {
             }
             if (format > 4) {
                 box = this.add.sprite(ix, iy, 'love').setOrigin(0, 0);
-                box.setFrame(li);
-                li++;
+                box.setFrame(format-10);
             }
             // add shape mask to each
             box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
