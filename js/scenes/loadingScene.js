@@ -68,6 +68,16 @@ loadingScene.preload = function () {
         spacing: 1
     });
 
+    // right / droite
+    this.load.spritesheet('love', 'assets/love.png', {
+        frameWidth: 250,
+        frameHeight: 250,
+        startFrame: 0,
+        endFrame: 7,
+        margin: 1,
+        spacing: 1
+    });
+
 };
 
 loadingScene.create = function () {

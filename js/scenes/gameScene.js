@@ -28,14 +28,16 @@ gameScene.init = function () {
     * 's' is a space option for visual effect
     * 
     */
-    this.rowsColsA = [[0, 1], [2, 3]];
+    //.rowsColsA = [[0, 1], [2, 3]];
 
     // - if using other than a 2x2 grid - set move=false
+    this.movingBoxes = false;
+
     //this.rowsColsA = [[0, 1, 2, 3]];
     //this.rowsColsA = [[0, 1], ['s', 2, 3]];
     //this.rowsColsA = [[0, 1], ['s'], ['s'], ['s', 's', 2, 3]];
     //this.rowsColsA = [[0, 's'], ['s', 1], ['s', 's', 2], ['s', 's', 's', 3]];
-    this.movingBoxes = true;
+    this.rowsColsA = [['s', 5, 6, 's'], [5, 0, 1, 6], [8, 2, 3, 7], ['s', 8, 7, 's']];
     //
 
     // box array for updates
@@ -62,6 +64,8 @@ gameScene.create = function () {
     // initial x, y
     let ix;
     let iy;
+    // initial love index
+    let li = 0;
     // loop rows cols from design array
     for (let row = 0; row < this.rowsColsA.length; row++) {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
@@ -84,18 +88,20 @@ gameScene.create = function () {
             }
             if (format == 1) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
-                box.format = 1;
                 box.setFrame(this.hOnesCur);
             }
             if (format == 2) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
-                box.format = 2;
                 box.setFrame(this.mTensCur);
             }
             if (format == 3) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
-                box.format = 3;
                 box.setFrame(this.mOnesCur);
+            }
+            if (format > 4) {
+                box = this.add.sprite(ix, iy, 'love').setOrigin(0, 0);
+                box.setFrame(li);
+                li++;
             }
             // add shape mask to each
             box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
@@ -103,13 +109,12 @@ gameScene.create = function () {
             // set coordinates
             box.row = row;
             box.col = col;
+            box.format = format;
             this.formatter(box);
             // store boxes for updating
             this.boxesA.push(box);
         }
     }
-    //this.boxesA[2].fenetre.y+=100;
-    //this.boxesA[2].y += 100;
 };
 gameScene.formatter = function (box) {
 
@@ -119,6 +124,7 @@ gameScene.formatter = function (box) {
     box.fenetre.x = box.ix;
     box.fenetre.y = box.iy;
 
+    // left, down
     if (box.format == 0) {
         // animate - depart ending x, y
         box.dx = box.ix - this.side;
@@ -128,6 +134,7 @@ gameScene.formatter = function (box) {
         box.ry = box.iy - this.side;
     }
 
+    // right, down
     if (box.format == 1) {
         // animate - depart
         box.dx = box.ix + this.side;
@@ -137,6 +144,7 @@ gameScene.formatter = function (box) {
         box.ry = box.iy - this.side;
     }
 
+    // left, up
     if (box.format == 2) {
         // animate - depart
         box.dx = box.ix - this.side;
@@ -146,6 +154,7 @@ gameScene.formatter = function (box) {
         box.ry = box.iy + this.side;
     }
 
+    // right, up
     if (box.format == 3) {
         // animate - depart
         box.dx = box.ix + this.side;
@@ -191,7 +200,7 @@ gameScene.updateTime = function () {
     // if same minute, no changes
     if (mOnes == this.mOnesCur) return;
 
-    //console.log(this.hTensCur, this.hOnesCur, this.mTensCur, this.mOnesCur);
+    // assess boxes for time to move
     for (let i = 0; i < this.boxesA.length; i++) {
 
         let box = this.boxesA[i];
@@ -201,18 +210,18 @@ gameScene.updateTime = function () {
             this.depart(box, mOnes);
         }
 
-        // check for updated mTens -  && mTens != this.mTensCur
-        if (box.format == 2) {
+        // check for updated mTens
+        if (box.format == 2 && (mTens != this.mTensCur || this.movingBoxes)) {
             this.depart(box, mTens);
         }
 
-        // hOnes -  && hOnes != this.hOnesCur
-        if (box.format == 1) {
+        // hOnes
+        if (box.format == 1 && (hOnes != this.hOnesCur || this.movingBoxes)) {
             this.depart(box, hOnes);
         }
 
-        // hTens -  && hTens != this.hTensCur
-        if (box.format == 0) {
+        // hTens
+        if (box.format == 0 && (hTens != this.hTensCur || this.movingBoxes)) {
             this.depart(box, hTens);
         }
     }
@@ -223,7 +232,7 @@ gameScene.updateTime = function () {
     this.mTensCur = mTens;
     this.mOnesCur = mOnes;
 
-    // move 2x2 now
+    // move 2x2 now, before this.rentre() begins
     if (this.movingBoxes) {
         this.topCur = 25 + Math.floor(Math.random() * (this.gameH - 25 - ((this.side + this.spacer) * 2)));
         this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - 25 - ((this.side + this.spacer) * 2)));
