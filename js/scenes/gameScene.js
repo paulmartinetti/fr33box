@@ -51,6 +51,7 @@ gameScene.init = function () {
      * 
      */
     this.rowsColsA = [['s', 10, 11, 's'], [17, 0, 1, 12], [16, 2, 3, 13], ['s', 15, 14, 's']];
+    this.loveIndA = [0, 1, 2, 3, 4, 5, 6, 7];
     //
 
     // box array for updates
@@ -111,7 +112,7 @@ gameScene.create = function () {
             }
             if (format > 4) {
                 box = this.add.sprite(ix, iy, 'love').setOrigin(0, 0);
-                box.setFrame(format-10);
+                box.setFrame(this.loveIndA[format - 10]);
             }
             // add shape mask to each
             box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
@@ -125,6 +126,9 @@ gameScene.create = function () {
             this.boxesA.push(box);
         }
     }
+    // update love index after opening animation
+    let t = this.loveIndA.pop();
+    this.loveIndA.unshift(t);
 };
 gameScene.formatter = function (box) {
 
@@ -135,7 +139,7 @@ gameScene.formatter = function (box) {
     box.fenetre.y = box.iy;
 
     // left, down
-    if (box.format == 0) {
+    if (box.format == 0 || box.format == 10 || box.format == 17) {
         // animate - depart ending x, y
         box.dx = box.ix - this.side;
         box.dy = box.iy;
@@ -145,7 +149,7 @@ gameScene.formatter = function (box) {
     }
 
     // right, down
-    if (box.format == 1) {
+    if (box.format == 1 || box.format == 11 || box.format == 12) {
         // animate - depart
         box.dx = box.ix + this.side;
         box.dy = box.iy;
@@ -155,7 +159,7 @@ gameScene.formatter = function (box) {
     }
 
     // left, up
-    if (box.format == 2) {
+    if (box.format == 2 || box.format == 15 || box.format == 16) {
         // animate - depart
         box.dx = box.ix - this.side;
         box.dy = box.iy;
@@ -165,7 +169,7 @@ gameScene.formatter = function (box) {
     }
 
     // right, up
-    if (box.format == 3) {
+    if (box.format == 3 || box.format == 13 || box.format == 14) {
         // animate - depart
         box.dx = box.ix + this.side;
         box.dy = box.iy;
@@ -210,7 +214,7 @@ gameScene.updateTime = function () {
     // if same minute, no changes
     if (mOnes == this.mOnesCur) return;
 
-    // assess boxes for time to move
+    // assess boxes for time change
     for (let i = 0; i < this.boxesA.length; i++) {
 
         let box = this.boxesA[i];
@@ -234,7 +238,18 @@ gameScene.updateTime = function () {
         if (box.format == 0 && (hTens != this.hTensCur || this.movingBoxes)) {
             this.depart(box, hTens);
         }
+
+        // update LOVE boxes, formats 10-17
+        if (box.format > 9) {
+            // update all
+            this.depart(box, this.loveIndA[box.format - 10]);
+
+        }
     }
+
+    // remove last value, move to first
+    let t = this.loveIndA.pop();
+    this.loveIndA.unshift(t);
 
     // new is now Cur
     this.hTensCur = hTens;
