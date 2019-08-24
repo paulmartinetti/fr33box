@@ -19,27 +19,38 @@ gameScene.init = function () {
     this.mTensCur = 0;
     this.mOnesCur = 0;
 
-    // design of sprites
+
+    /**** design of sprites ****/
     /*
     * standard clock:
     * [0, 1] [h, h]
     * [2, 3] [m, m]
-    *  
-    * 's' is a space option for visual effect
-    * 
+    *   
     */
 
-    // original
+    /**
+     * 
+     * original
+     * 
+     * moving @ each minute - if using other than a 2x2 grid - set move=false
+     * 
+     *  */
     //this.rowsColsA = [[0, 1], [2, 3]];
-
-    // moving @ each minute - if using other than a 2x2 grid - set move=false
     this.movingBoxes = false;
 
-    // other random formats, non-moving
+
+    /**
+     * 
+     * other random formats, non-moving
+     * 
+     * 's' is a space option for visual effect
+     * 
+     */
     //this.rowsColsA = [[0, 1, 2, 3]];
     //this.rowsColsA = [[0, 1], ['s', 2, 3]];
     //this.rowsColsA = [[0, 1], ['s'], ['s'], ['s', 's', 2, 3]];
     //this.rowsColsA = [[0, 's'], ['s', 1], ['s', 's', 2], ['s', 's', 's', 3]];
+
 
     /**
      * LOVE animation grid
@@ -51,7 +62,9 @@ gameScene.init = function () {
      * 
      */
     this.rowsColsA = [['s', 10, 11, 's'], [17, 0, 1, 12], [16, 2, 3, 13], ['s', 15, 14, 's']];
+    // to make the LOVE characters transition clockwise:
     this.loveIndA = [7, 0, 1, 2, 3, 4, 5, 6];
+    // to capture seconds = 30 to animate LOVE
     this.seconds = 0;
     //
 
@@ -93,35 +106,40 @@ gameScene.create = function () {
             // skip a space
             if (format == 's') continue;
 
+            // hour tens
             if (format == 0) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
-                box.format = 0;
                 box.setFrame(this.hTensCur);
-
             }
+            // hour ones
             if (format == 1) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
                 box.setFrame(this.hOnesCur);
             }
+            // minute tens
             if (format == 2) {
                 box = this.add.sprite(ix, iy, 'gauche').setOrigin(0, 0);
                 box.setFrame(this.mTensCur);
             }
+            // minute ones
             if (format == 3) {
                 box = this.add.sprite(ix, iy, 'droite').setOrigin(0, 0);
                 box.setFrame(this.mOnesCur);
             }
-            if (format > 4) {
+            // LOVE formats 10-17
+            if (format > 9) {
                 box = this.add.sprite(ix, iy, 'love').setOrigin(0, 0);
+                // using 10-17 to have easy access to numbers 0-7
                 box.setFrame(format - 10);
             }
+            // store format for updates
+            box.format = format;
             // add shape mask to each
             box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
             box.setMask(box.fenetre.createBitmapMask());
             // set coordinates
             box.row = row;
             box.col = col;
-            box.format = format;
             this.formatter(box);
             // store boxes for updating
             this.boxesA.push(box);
@@ -130,7 +148,7 @@ gameScene.create = function () {
 };
 gameScene.formatter = function (box) {
 
-    // update box
+    // update box and mask coordinates
     box.ix = this.leftCur + ((this.side + this.spacer) * box.col);
     box.iy = this.topCur + ((this.side + this.spacer) * box.row);
     box.fenetre.x = box.ix;
@@ -177,6 +195,7 @@ gameScene.formatter = function (box) {
     }
 }
 
+// looping every second
 gameScene.updateTime = function () {
 
     // checking once per second
@@ -184,6 +203,7 @@ gameScene.updateTime = function () {
 
     let minutes = time.getMinutes();
     let hours = time.getHours();
+    // more reliable than time.getSeconds();
     this.seconds++;
 
     // new time check values
@@ -209,8 +229,8 @@ gameScene.updateTime = function () {
         hTens = Math.floor(hours / 10);
         hOnes = hours - (hTens * 10);
     }
+
     // LOVE @ 30 seconds
-    console.log(this.seconds);
     if (this.seconds == 30) {
         for (let i = 0; i < this.boxesA.length; i++) {
             let box = this.boxesA[i];
@@ -221,11 +241,14 @@ gameScene.updateTime = function () {
 
             }
         }
-        // remove last value, move to first
+        // update LOVE index to make clockwise transitions
+        // remove last value
         let t = this.loveIndA.pop();
+        // move to first position
         this.loveIndA.unshift(t);
     }
-    // if same minute, no changes
+
+    // clock - if same minute as the last second, no changes
     if (mOnes == this.mOnesCur) return;
 
     // assess boxes for time change
@@ -238,7 +261,7 @@ gameScene.updateTime = function () {
             this.depart(box, mOnes);
         }
 
-        // check for updated mTens
+        // check for updated mTens, or moving version (should have been a git branch!)
         if (box.format == 2 && (mTens != this.mTensCur || this.movingBoxes)) {
             this.depart(box, mTens);
         }
@@ -254,15 +277,17 @@ gameScene.updateTime = function () {
         }
     }
 
+    // reset the LOVE counter after changing the clock
     this.seconds = 0;
 
-    // new is now Cur
+    // capture new is now Cur
     this.hTensCur = hTens;
     this.hOnesCur = hOnes;
     this.mTensCur = mTens;
     this.mOnesCur = mOnes;
 
-    // move 2x2 now, before this.rentre() begins
+    // random move 2x2 now, between depart() and rentre()
+    // calculations includes a 25 px stage border
     if (this.movingBoxes) {
         this.topCur = 25 + Math.floor(Math.random() * (this.gameH - 25 - ((this.side + this.spacer) * 2)));
         this.leftCur = 25 + Math.floor(Math.random() * (this.gameW - 25 - ((this.side + this.spacer) * 2)));
@@ -279,11 +304,8 @@ gameScene.depart = function (box, newTime) {
         paused: false,
         callbackScope: this,
         onComplete: function (tween, sprites) {
-            // update time
             box.setFrame(newTime);
-            // tenter bouger
             this.formatter(box);
-            // set x, y for rentree
             box.x = box.rx;
             box.y = box.ry;
             this.rentre(box);
