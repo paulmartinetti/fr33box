@@ -47,6 +47,7 @@ loadingScene.preload = function () {
     this.load.image('bg', 'assets/bg.png');
 
     this.load.image('mask', 'assets/mask.png');
+    this.load.image('mask125', 'assets/mask125.png');
 
     // left / gauche
     this.load.spritesheet('gauche','assets/freeBoxGauche.png', {
@@ -68,12 +69,42 @@ loadingScene.preload = function () {
         spacing: 1
     });
 
-    // right / droite
+    // LOVE
     this.load.spritesheet('love', 'assets/love.png', {
-        frameWidth: 250,
-        frameHeight: 250,
+        frameWidth: 125,
+        frameHeight: 125,
         startFrame: 0,
-        endFrame: 7,
+        endFrame: 3,
+        margin: 1,
+        spacing: 1
+    });
+
+    // AIME
+    this.load.spritesheet('aime', 'assets/aime.png', {
+        frameWidth: 125,
+        frameHeight: 125,
+        startFrame: 0,
+        endFrame: 3,
+        margin: 1,
+        spacing: 1
+    });
+
+    // DOUX
+    this.load.spritesheet('doux', 'assets/doux.png', {
+        frameWidth: 125,
+        frameHeight: 125,
+        startFrame: 0,
+        endFrame: 3,
+        margin: 1,
+        spacing: 1
+    });
+
+    // LIVE
+    this.load.spritesheet('live', 'assets/live.png', {
+        frameWidth: 125,
+        frameHeight: 125,
+        startFrame: 0,
+        endFrame: 3,
         margin: 1,
         spacing: 1
     });
