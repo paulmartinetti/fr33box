@@ -70,7 +70,7 @@ loadingScene.preload = function () {
     });
 
     // LOVE
-    this.load.spritesheet('love', 'assets/love.png', {
+    this.load.spritesheet('word1col', 'assets/word1col.png', {
         frameWidth: 125,
         frameHeight: 125,
         startFrame: 0,
@@ -80,7 +80,7 @@ loadingScene.preload = function () {
     });
 
     // AIME
-    this.load.spritesheet('aime', 'assets/aime.png', {
+    this.load.spritesheet('word2col', 'assets/word2col.png', {
         frameWidth: 125,
         frameHeight: 125,
         startFrame: 0,
@@ -90,7 +90,7 @@ loadingScene.preload = function () {
     });
 
     // DOUX
-    this.load.spritesheet('doux', 'assets/doux.png', {
+    this.load.spritesheet('word3col', 'assets/word3col.png', {
         frameWidth: 125,
         frameHeight: 125,
         startFrame: 0,
@@ -100,7 +100,7 @@ loadingScene.preload = function () {
     });
 
     // LIVE
-    this.load.spritesheet('live', 'assets/live.png', {
+    this.load.spritesheet('word4col', 'assets/word4col.png', {
         frameWidth: 125,
         frameHeight: 125,
         startFrame: 0,

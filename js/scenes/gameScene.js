@@ -35,9 +35,12 @@ gameScene.init = function () {
     ['s', 2, 3, 's'],
     [20, 21, 22, 23]];
 
-    this.motsA = ['love', 'aime', 'live', 'doux'];
+    this.motsA = ['word1col', 'word2col', 'word3col', 'word4col'];
     // to capture seconds = 30 to animate LOVE
     this.seconds = 0;
+
+    this.topRow = 0;
+    this.botRow = 1;
 
     // box array for updates
     this.boxesA = [];
@@ -52,8 +55,6 @@ gameScene.create = function () {
     // initial x, y
     let ix;
     let iy;
-    // choose two words for setup
-    let mots = this.deuxMots();
     // loop rows cols from design array
     for (let row = 0; row < this.rowsColsA.length; row++) {
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
@@ -90,12 +91,12 @@ gameScene.create = function () {
             }
             // LOVE formats 10-17
             if (format > 9 && format < 20) {
-                box = this.add.sprite(ix, iy, mots.one).setOrigin(0, 0);
-                box.setFrame(format - 10);
+                box = this.add.sprite(ix, iy, this.motsA[format - 10]).setOrigin(0, 0);
+                box.setFrame(this.topRow);
             }
             if (format > 19) {
-                box = this.add.sprite(ix, iy, mots.two).setOrigin(0, 0);
-                box.setFrame(format - 20);
+                box = this.add.sprite(ix, iy, this.motsA[format - 20]).setOrigin(0, 0);
+                box.setFrame(this.botRow);
             }
             // store format for updates
             box.format = format;
@@ -143,7 +144,7 @@ gameScene.formatter = function (box) {
         box.iy = this.topCur + ((this.side + this.spacer) * box.row);
     }
 
-    
+
 
     // left, down
     if (box.format == 0 || box.format == 10 || box.format == 20) {
@@ -220,17 +221,20 @@ gameScene.updateTime = function () {
         hTens = Math.floor(hours / 10);
         hOnes = hours - (hTens * 10);
     }
-
+    console.log(this.seconds);
     // LOVE @ 30 seconds -- change words
     if (this.seconds == 30) {
+        // pick new words
+        this.rndMots();
+        // update
         for (let i = 0; i < this.boxesA.length; i++) {
             let box = this.boxesA[i];
             // update LOVE boxes, formats 10-17
             if (box.format > 9 && box.format < 20) {
                 // update all
-                this.depart(box, box.format - 10);
+                this.depart(box, this.topRow);
             } else if (box.format > 19) {
-                this.depart(box, box.format - 20);
+                this.depart(box, this.botRow);
             }
         }
     }
@@ -305,23 +309,12 @@ gameScene.rentre = function (box) {
     }, this);
 }
 
-gameScene.deuxMots = function () {
-
-    // choose one word
-    let len = this.motsA.length - 1;
-    let motInd = Math.round(Math.random() * len);
-    let mots = {};
-    mots.one = this.motsA.splice(motInd, 1);
-
-    // choose a different word
-    len = this.motsA.length - 1;
-    motInd = Math.round(Math.random() * len);
-    mots.two = this.motsA.splice(motInd, 1);
-
-    // refresh array
-    this.motsA.push(mots.one);
-    this.motsA.push(mots.two);
-
-    return mots;
+// randomize word rows
+gameScene.rndMots = function () {
+    let tA = [0, 1, 2, 3];
+    this.topRow = tA.splice(Math.round(Math.random()) * 3, 1);
+    this.botRow = tA.splice(Math.round(Math.random()) * 2, 1);
+    tA.push(this.topRow);
+    tA.push(this.botRow);
 }
 /******************* no code below here, doesn't run */
