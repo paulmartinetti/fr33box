@@ -52,14 +52,10 @@ gameScene.create = function () {
     // initial x, y
     let ix;
     let iy;
+    // choose two words for setup
+    let mots = this.deuxMots();
     // loop rows cols from design array
     for (let row = 0; row < this.rowsColsA.length; row++) {
-
-        // choose a random word for above the clock (once per row)
-        let len = this.motsA.length - 1;
-        let mot = this.motsA[Math.round(Math.random() * len)];
-        console.log(mot);
-
         for (let col = 0; col < this.rowsColsA[row].length; col++) {
 
             // position based on rowCol array (4x4 grid)
@@ -94,11 +90,11 @@ gameScene.create = function () {
             }
             // LOVE formats 10-17
             if (format > 9 && format < 20) {
-                box = this.add.sprite(ix, iy, mot).setOrigin(0, 0);
+                box = this.add.sprite(ix, iy, mots.one).setOrigin(0, 0);
                 box.setFrame(format - 10);
             }
             if (format > 19) {
-                box = this.add.sprite(ix, iy, mot).setOrigin(0, 0);
+                box = this.add.sprite(ix, iy, mots.two).setOrigin(0, 0);
                 box.setFrame(format - 20);
             }
             // store format for updates
@@ -138,7 +134,6 @@ gameScene.formatter = function (box) {
         box.ix = this.leftCur + ((this.side + this.spacer) * box.col) + (Math.round(Math.random()) * 125);
         box.iy = this.topCur + ((this.side + this.spacer) * box.row) + (Math.round(Math.random()) * 125);
         // update box and mask coordinates
-
         box.x = box.ix;
         box.y = box.iy;
         box.fenetre.x = box.ix;
@@ -226,7 +221,7 @@ gameScene.updateTime = function () {
         hOnes = hours - (hTens * 10);
     }
 
-    // LOVE @ 30 seconds
+    // LOVE @ 30 seconds -- change words
     if (this.seconds == 30) {
         for (let i = 0; i < this.boxesA.length; i++) {
             let box = this.boxesA[i];
@@ -310,4 +305,23 @@ gameScene.rentre = function (box) {
     }, this);
 }
 
+gameScene.deuxMots = function () {
+
+    // choose one word
+    let len = this.motsA.length - 1;
+    let motInd = Math.round(Math.random() * len);
+    let mots = {};
+    mots.one = this.motsA.splice(motInd, 1);
+
+    // choose a different word
+    len = this.motsA.length - 1;
+    motInd = Math.round(Math.random() * len);
+    mots.two = this.motsA.splice(motInd, 1);
+
+    // refresh array
+    this.motsA.push(mots.one);
+    this.motsA.push(mots.two);
+
+    return mots;
+}
 /******************* no code below here, doesn't run */
