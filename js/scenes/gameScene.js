@@ -91,10 +91,12 @@ gameScene.create = function () {
             }
             // LOVE formats 10-17
             if (format > 9 && format < 20) {
+                iy += 125;
                 box = this.add.sprite(ix, iy, this.motsA[format - 10]).setOrigin(0, 0);
                 box.setFrame(this.topRow);
             }
             if (format > 19) {
+                ix += 125;
                 box = this.add.sprite(ix, iy, this.motsA[format - 20]).setOrigin(0, 0);
                 box.setFrame(this.botRow);
             }
@@ -108,6 +110,8 @@ gameScene.create = function () {
             }
             box.setMask(box.fenetre.createBitmapMask());
             // set coordinates
+            box.ix = ix;
+            box.iy = iy;
             box.row = row;
             box.col = col;
             this.formatter(box);
@@ -129,22 +133,6 @@ gameScene.create = function () {
 
 };
 gameScene.formatter = function (box) {
-
-    // adjust for 125 boxes
-    if (box.format > 9) {
-        box.ix = this.leftCur + ((this.side + this.spacer) * box.col) + (Math.round(Math.random()) * 125);
-        box.iy = this.topCur + ((this.side + this.spacer) * box.row) + (Math.round(Math.random()) * 125);
-        // update box and mask coordinates
-        box.x = box.ix;
-        box.y = box.iy;
-        box.fenetre.x = box.ix;
-        box.fenetre.y = box.iy;
-    } else {
-        box.ix = this.leftCur + ((this.side + this.spacer) * box.col);
-        box.iy = this.topCur + ((this.side + this.spacer) * box.row);
-    }
-
-
 
     // left, down
     if (box.format == 0 || box.format == 10 || box.format == 20) {
@@ -290,7 +278,7 @@ gameScene.depart = function (box, newTime) {
         callbackScope: this,
         onComplete: function (tween, sprites) {
             box.setFrame(newTime);
-            this.formatter(box);
+            //this.formatter(box);
             box.x = box.rx;
             box.y = box.ry;
             this.rentre(box);
