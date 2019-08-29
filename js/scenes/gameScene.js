@@ -209,9 +209,8 @@ gameScene.updateTime = function () {
         hTens = Math.floor(hours / 10);
         hOnes = hours - (hTens * 10);
     }
-    console.log(this.seconds);
     // LOVE @ 30 seconds -- change words
-    if (this.seconds == 30) {
+    if (this.seconds == 15) {
         // pick new words
         this.rndMots();
         // update
@@ -225,6 +224,7 @@ gameScene.updateTime = function () {
                 this.depart(box, this.botRow);
             }
         }
+        this.seconds = 0;
     }
 
     // clock - if same minute as the last second, no changes
@@ -300,8 +300,9 @@ gameScene.rentre = function (box) {
 // randomize word rows
 gameScene.rndMots = function () {
     let tA = [0, 1, 2, 3];
-    this.topRow = tA.splice(Math.round(Math.random()) * 3, 1);
-    this.botRow = tA.splice(Math.round(Math.random()) * 2, 1);
+    this.topRow = tA.splice(Math.round(Math.random() * 3), 1);
+    this.botRow = tA.splice(Math.round(Math.random() * 2), 1);
+    console.log(this.topRow, this.botRow, tA);
     tA.push(this.topRow);
     tA.push(this.botRow);
 }
