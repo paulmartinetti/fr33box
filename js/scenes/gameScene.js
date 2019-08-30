@@ -241,23 +241,20 @@ gameScene.updateTime = function () {
         }
 
         // check for updated mTens, or moving version (should have been a git branch!)
-        if (box.format == 2 && (mTens != this.mTensCur || this.movingBoxes)) {
+        if (box.format == 2 && mTens != this.mTensCur) {
             this.depart(box, mTens);
         }
 
         // hOnes
-        if (box.format == 1 && (hOnes != this.hOnesCur || this.movingBoxes)) {
+        if (box.format == 1 && hOnes != this.hOnesCur) {
             this.depart(box, hOnes);
         }
 
         // hTens
-        if (box.format == 0 && (hTens != this.hTensCur || this.movingBoxes)) {
+        if (box.format == 0 && hTens != this.hTensCur) {
             this.depart(box, hTens);
         }
     }
-
-    // reset the LOVE counter after changing the clock
-    this.seconds = 0;
 
     // capture new is now Cur
     this.hTensCur = hTens;
@@ -302,7 +299,7 @@ gameScene.rndMots = function () {
     let tA = [0, 1, 2, 3];
     this.topRow = tA.splice(Math.round(Math.random() * 3), 1);
     this.botRow = tA.splice(Math.round(Math.random() * 2), 1);
-    console.log(this.topRow, this.botRow, tA);
+    //console.log(this.topRow, this.botRow, tA);
     tA.push(this.topRow);
     tA.push(this.botRow);
 }
