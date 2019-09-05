@@ -8,6 +8,7 @@ gameScene.init = function () {
     this.gameH = this.sys.game.config.height;
 
     // grid boundaries and sprite dimensions 
+    // Cur is current (updated by new when appropriate)
     this.topCur = 25;
     this.leftCur = 25;
     this.spacer = 25;
@@ -35,11 +36,14 @@ gameScene.init = function () {
     ['s', 2, 3, 's'],
     [20, 21, 22, 23]];
 
-    this.motsA = ['word1col', 'word2col', 'word3col', 'word4col'];
-    // to capture seconds = 30 to animate LOVE
+    // to capture seconds for word animations not on the minute
     this.seconds = 0;
 
+    // there are four 4-letter words
+    this.motsA = ['word1col', 'word2col', 'word3col', 'word4col'];
+    // start with first two words in motsA using indices:
     this.topRow = 0;
+    // the row below the clock starts as word2col
     this.botRow = 1;
 
     // box array for updates
@@ -104,6 +108,7 @@ gameScene.create = function () {
             box.format = format;
             // add shape mask to each
             if (format > 9) {
+                // small letters, small mask
                 box.fenetre = this.add.sprite(ix, iy, 'mask125').setVisible(false).setOrigin(0, 0);
             } else {
                 box.fenetre = this.add.sprite(ix, iy, 'mask').setVisible(false).setOrigin(0, 0);
@@ -230,7 +235,7 @@ gameScene.updateTime = function () {
     // clock - if same minute as the last second, no changes
     if (mOnes == this.mOnesCur) return;
 
-    // assess boxes for time change
+    // assess clock boxes for time change
     for (let i = 0; i < this.boxesA.length; i++) {
 
         let box = this.boxesA[i];
@@ -294,7 +299,7 @@ gameScene.rentre = function (box) {
     }, this);
 }
 
-// randomize word rows
+// randomize word rows by selecting random motsA indices
 gameScene.rndMots = function () {
     let tA = [0, 1, 2, 3];
     this.topRow = tA.splice(Math.round(Math.random() * 3), 1);
